@@ -12,7 +12,7 @@
         android:id="@+id/signupactivity_edittext_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="이메일"/>
+        android:hint="이메일 형식으로 입력해주세요"/>
     <EditText
         android:id="@+id/signupactivity_edittext_name"
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
         android:id="@+id/signupactivity_edittext_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="비밀번호"/>
+        android:hint="비밀번호 8자 이상 입력해주세요!."/>
     <Button
         android:id="@+id/signupactivity_button_signup"
         android:layout_width="match_parent"

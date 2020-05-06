@@ -2,9 +2,12 @@ package com.example.chattingapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,22 +17,58 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    private String Myname;
+    private ArrayList<ChatData> CheckList;
+    private int flag;
     private EditText edit_id;
     private EditText edit_password;
     FirebaseAuth  firebaseAuth;
+    private FirebaseUser mUser;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mRef;
+    private String Name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        CheckList = new ArrayList<ChatData>();
         edit_id = (EditText)findViewById(R.id.edit_id);
         edit_password = (EditText)findViewById(R.id.edit_password);
-
+        Name= getIntent().getStringExtra("name");
 
 
         firebaseAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
+        mRef = mDatabase.getReference().child("users"); //유저정보 저장
+
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    ChatData chatdata = snapshot.getValue(ChatData.class);
+                    CheckList.add(chatdata);
+
+
+
+
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        })
+        ;
 
 
 
@@ -47,13 +86,33 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String id = edit_id.getText().toString();
                 String password = edit_password.getText().toString();
-
+                flag=0;
                 firebaseAuth.signInWithEmailAndPassword(id,password)
                         .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful()) {
-                                    Intent intent = new Intent(MainActivity.this, SuccessActivity.class);
+                                if(task.isSuccessful()) { //로그인 성공 현재 내가짠 로직은 로그인 버튼을 눌러야만 목록에 저장이됨 만약 회원가입을하고 로그인패스하고 다른아이디로 회원가입을 바로하면 error
+                                    Intent intent = new Intent(MainActivity.this, TabMenuActivity.class);
+
+
+                                    mUser=firebaseAuth.getCurrentUser();
+                                    ChatData chatData = new ChatData(Name,mUser.getUid(),null,mUser.getEmail(),1);
+
+
+
+                                    for(int i=0;i<CheckList.size();i++){
+                                        if(CheckList.get(i).getuid().equals(chatData.getuid())){
+                                            flag=1;
+                                            break;
+
+                                        }
+
+                                    }
+
+                                    if(flag==0){
+                                    mRef.push().setValue(chatData);
+                                    }
+
                                     intent.putExtra("id",edit_id.getText().toString());
                                     startActivity(intent);
                                     finish();
@@ -68,4 +127,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
 }

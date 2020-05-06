@@ -14,8 +14,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignupActivity extends AppCompatActivity {
+    private DatabaseReference databaseReference;
+    private FirebaseDatabase database;
     private EditText email;
     private EditText name;
     private EditText password;
@@ -34,6 +38,7 @@ public class SignupActivity extends AppCompatActivity {
         signup=(Button)findViewById(R.id.signupactivity_button_signup);
 
         mAuth=FirebaseAuth.getInstance();
+
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,11 +49,12 @@ public class SignupActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()){//회원가입 성공시
                                     Intent intent = new Intent(SignupActivity.this,MainActivity.class);
+                                    intent.putExtra("name",name.getText().toString());
                                     startActivity(intent);
                                     finish();
                                 }
                                 else{
-                                    Toast.makeText(SignupActivity.this,"fail",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SignupActivity.this,"email already exsit or 비밀번호를 8자이상 입력해주세요.",Toast.LENGTH_LONG).show();
                                     return;
                                 }
                             }

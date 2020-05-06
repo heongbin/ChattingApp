@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".FriendsListFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:divider="@color/cardview_dark_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:text="나"
+            android:textSize="20dp"
+            android:layout_margin="10dp"
+
+            ></TextView>
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="10dp"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        >
+        <ImageView
+            android:layout_margin="10dp"
+            android:id="@+id/my_view_id"
+            android:layout_width="100dp"
+            android:layout_height="100dp"></ImageView>
+        <TextView
+            android:layout_margin="10dp"
+            android:id="@+id/my_email_view"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_toRightOf="@id/my_view_id"
+            ></TextView>
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
+
+        <View
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/design_default_color_primary_dark"
+            ></View>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_margin="10dp"
+        android:id="@+id/Recyclerview_friendlist_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</FrameLayout>

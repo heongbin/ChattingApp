@@ -165,25 +165,25 @@ public class ChattingListFragment extends Fragment {
                         break;
                     }
                 }
-                Log.d("myuid",Myuid);
-                Log.d("myname!",MyName);
+
                 Chatowner = firebaseDatabase.getReference().child("Chatownerlist").child(Myuid); //각자 사용자가 가지는 채팅목록들 저장. 채팅상대의 이름과 프로필사진 그리고 그대화의 마지막대화.
 
                 Chatowner.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(!MyChattingList.isEmpty()){
+                            MyChattingList.clear();
+                        }
+
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                             map.put(snapshot.getKey(),snapshot.getValue().toString());
                             String chat = snapshot.getKey();
                             Log.d("chatowner",chat);
-
-                        }
-
-                        //Log.d("lastcomment!!",map.get("lastcomment"));
-                        if(!MyChattingList.isEmpty()){
-                            MyChattingList.clear();
                         }
                         MyChattingList.add(new ChatData(null,map.get("name"),map.get("lastcomment"),2));
+                        //Log.d("lastcomment!!",map.get("lastcomment"));
+
+
                         //Log.d("chek_mychattinglist",MyChattingList.get(MyChattingList.size()-1).getMaincontent());
                         recyclerAdapter.notifyDataSetChanged();
                     }

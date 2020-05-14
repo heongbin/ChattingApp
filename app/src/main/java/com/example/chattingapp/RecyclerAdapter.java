@@ -204,13 +204,26 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             firebaseDatabase = FirebaseDatabase.getInstance();
             Log.d("mmprofile4:",mProfileUid);
             Myfref=firebaseDatabase.getReference().child("users"); //내아이디를 확인하는부분.
-            Myfref.addValueEventListener(new ValueEventListener() {
+            Myfref.addChildEventListener(new ChildEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                        ChatData chatData =snapshot.getValue(ChatData.class);
-                        User.add(chatData);
-                    }
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    ChatData chatData = dataSnapshot.getValue(ChatData.class);
+                    User.add(chatData);
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
                 }
 
                 @Override
@@ -218,16 +231,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 }
             })
-            ;
+                    ;
             MyChattingids=firebaseDatabase.getReference().child("chattingroomid"); //chattingroomid에 고유 데이터 확인하는 리스트만드는 구간.
             MyChattingids.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(DataSnapshot snapshot :dataSnapshot.getChildren()){
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                         ChatData chatData = snapshot.getValue(ChatData.class);
                         chatids.add(chatData);
                         chatkeyandnames.add(new ChatData(snapshot.getKey(),chatData.getnamea(),chatData.getnameb()));
-
+                        Log.d("usersview4",chatkeyandnames.get(chatkeyandnames.size()-1).getnamea());
+                        Log.d("usersview4",chatkeyandnames.get(chatkeyandnames.size()-1).getnameb());
                     }
                 }
 
@@ -236,60 +250,61 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 }
             })
-
-;
+                    ;
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     for (int i=0;i<User.size();i++){
-                        Log.d("usersview",User.get(i).getName());
                         if (User.get(i).getuid().equals(mProfileUid)){
                             MyName = User.get(i).getName();
                             break;
                         }
                     }
                     Myref= firebaseDatabase.getReference().child("chattingroomid");//여기부터
-                    Log.d("Myname",MyName);
 
+
+                        int flag=0;
+                        Log.d("Myname!!",String.valueOf(flag));
                         if(chatids.isEmpty()){
                             Myref.push().setValue(new ChatData(MyName, FriendListName.getText().toString()));
-                            tmpkey=Myref.push().getKey();
+                            tmpkey=chatkeyandnames.get(chatkeyandnames.size()-1).getKey();
                         }
-                        else {
-                            Log.d("soball",chatids.get(0).getnamea());
-                            for (int i = 0; i < chatids.size(); i++) {
-                                if ((chatids.get(i).getnameb().equals(MyName) && chatids.get(i).getnamea().equals(FriendListName.getText().toString())) || (chatids.get(i).getnameb().equals(FriendListName.getText().toString()) && chatids.get(i).getnamea().equals(MyName))) {
-                                    for(int j =0 ;j<chatkeyandnames.size();j++){
-                                        if ((chatkeyandnames.get(j).getnameb().equals(MyName) && chatkeyandnames.get(j).getnamea().equals(FriendListName.getText().toString())) || (chatkeyandnames.get(j).getnameb().equals(FriendListName.getText().toString()) && chatkeyandnames.get(j).getnamea().equals(MyName))){
-                                            tmpkey=chatkeyandnames.get(j).getKey();
-                                            break;
-                                        }
-                                    }
+                        else {//이부분 chattingroomid부분에서 중복 발생. 내일 해결.
+                            for (int i = 0; i < chatkeyandnames.size(); i++) {
+                                if ((chatkeyandnames.get(i).getnameb().equals(MyName) && chatkeyandnames.get(i).getnamea().equals(FriendListName.getText().toString())) || (chatkeyandnames.get(i).getnameb().equals(FriendListName.getText().toString()) && chatkeyandnames.get(i).getnamea().equals(MyName))) {
+                                    tmpkey = chatkeyandnames.get(i).getKey();
+                                    flag=1;
                                     break;
 
-                                } else {
-                                    Myref.push().setValue(new ChatData(MyName, FriendListName.getText().toString()));
-                                    tmpkey = Myref.push().getKey();
-                                    break;
+
                                 }
                             }
+
+
+                                if(flag==0) {
+                                    Myref.push().setValue(new ChatData(MyName, FriendListName.getText().toString()));
+                                    tmpkey = chatkeyandnames.get(chatkeyandnames.size()-1).getKey();
+
+                                    Log.d("Myref!",tmpkey);
+                                }
+
+
                         }
 
                     //4.28에 해당 친구를 클릭햇을때 데이터베이스에 child(chatting_data) 를 만들어서 해당고유 채팅방이 내아이디와 채팅하는 상대방아이디를 갖는 데이터베이스를 만듬. 그리고 채팅페이지에서는 그 데이터를 이용하여 나와 상대채유저만갖느는 고유한 채탕벙 생성.
-                    mycontext = v.getContext();
+                        mycontext = v.getContext();
                         Chatting_key=tmpkey;
 
 
-
                         Log.d("sibal",tmpkey);
-                        if (!chatkeyandnames.isEmpty()) {
-                            for (int i = 0; i < chatkeyandnames.size(); i++) {
-                                if (((chatkeyandnames.get(i).getnamea().equals(FriendListName.getText().toString())) && (chatkeyandnames.get(i).getnameb().equals(MyName))) || ((chatkeyandnames.get(i).getnamea().equals(MyName) && chatkeyandnames.get(i).getnameb().equals(FriendListName.getText().toString())))) {
-                                    Chatting_key = chatkeyandnames.get(i).getKey();   //클릭한목록의 상대 아이디와 내아이디를 포함하는 채팅방의 고유키 채팅 액티비티에 보내기
-                                    break;
-                                }
-                            }
-                        }
+                        //if (!chatkeyandnames.isEmpty()) {
+                          //  for (int i = 0; i < chatkeyandnames.size(); i++) {
+                            //    if (((chatkeyandnames.get(i).getnamea().equals(FriendListName.getText().toString())) && (chatkeyandnames.get(i).getnameb().equals(MyName))) || ((chatkeyandnames.get(i).getnamea().equals(MyName) && chatkeyandnames.get(i).getnameb().equals(FriendListName.getText().toString())))) {
+                              //      Chatting_key = chatkeyandnames.get(i).getKey();   //클릭한목록의 상대 아이디와 내아이디를 포함하는 채팅방의 고유키 채팅 액티비티에 보내기
+                                //    break;
+                                //}
+                            //}
+                        //}
 
 
                     Intent intent =new Intent(mycontext,SuccessActivity.class);

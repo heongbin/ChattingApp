@@ -158,7 +158,6 @@ public class ChattingListFragment extends Fragment {
 
 
 
-
         Myref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -224,16 +223,23 @@ public class ChattingListFragment extends Fragment {
 
                         }
                         int flag=0;
-                        for (int i=0;i<MyChattingList.size();i++){
-                            if(MyChattingList.get(i).getName().equals(map.get("name"))){
-                                MyChattingList.get(i).setMaincontent(map.get("maincontent"));
-                                flag=1;
+                        try {
+                            for (int i = 0; i < MyChattingList.size(); i++) {
+                                if (MyChattingList.get(i).getName().equals(map.get("name"))) {
+                                    MyChattingList.get(i).setMaincontent(map.get("maincontent"));
+                                    flag = 1;
+
+                                }
 
                             }
+                        }catch (Exception e){
 
                         }
+
                         if (flag==0) {
-                            MyChattingList.add(new ChatData(null, map.get("name"), map.get("maincontent"), 2));
+                            if (map.get("name")!=null) {
+                                MyChattingList.add(new ChatData(null, map.get("name"), map.get("maincontent"), 2));
+                            }
                         }
                         //Log.d("lastcomment!!",map.get("lastcomment"));
 

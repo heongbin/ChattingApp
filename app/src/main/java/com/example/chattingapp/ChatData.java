@@ -24,6 +24,10 @@ public class ChatData {
         return maincontent;
     }
 
+    public void setMaincontent(String maincontent) {
+        this.maincontent = maincontent;
+    }
+
     public String getTime() {
         return time;
     }

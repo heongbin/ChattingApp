@@ -128,27 +128,8 @@ public class ChattingListFragment extends Fragment {
 
 
         Myref = firebaseDatabase.getReference().child("chattingroomid"); //채팅룸목록 확인하기
-        MyChat = firebaseDatabase.getReference().child("chattingroomid");
         MyFref = firebaseDatabase.getReference().child("users"); //내이름확인.
 
-
-
-        MyChat.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                     Chatkey = snapshot.getKey().toString();
-                     Chatkeylist.add(Chatkey);
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        })
-                ;
 
         MyFref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -166,34 +147,6 @@ public class ChattingListFragment extends Fragment {
                     }
                 }
 
-                Chatowner = firebaseDatabase.getReference().child("Chatownerlist").child(Myuid); //각자 사용자가 가지는 채팅목록들 저장. 채팅상대의 이름과 프로필사진 그리고 그대화의 마지막대화.
-
-                Chatowner.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(!MyChattingList.isEmpty()){
-                            MyChattingList.clear();
-                        }
-
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                            map.put(snapshot.getKey(),snapshot.getValue().toString());
-                            String chat = snapshot.getKey();
-                            Log.d("chatowner",chat);
-                        }
-                        MyChattingList.add(new ChatData(null,map.get("name"),map.get("lastcomment"),2));
-                        //Log.d("lastcomment!!",map.get("lastcomment"));
-
-
-                        //Log.d("chek_mychattinglist",MyChattingList.get(MyChattingList.size()-1).getMaincontent());
-                        recyclerAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                })
-                ;
             }
 
             @Override
@@ -202,6 +155,7 @@ public class ChattingListFragment extends Fragment {
             }
         })
         ;
+
 
 
 
@@ -229,60 +183,104 @@ public class ChattingListFragment extends Fragment {
                 //}
 
 
-                for (int i=0;i<DataWithKey.size();i++ ){
-                    String opponentimg=null;
-                    String opponentname;
+            for (int i=0;i<DataWithKey.size();i++ ) {//현재 사용자와 채팅하는 사람들의 유저이름과 그 고유 채팅방키를 가져옴
+                String opponentimg = null;
+                final String opponentname;
 
 
+                Log.d("dat!!", DataWithKey.get(i).getOpponentName());
 
-
-
-                    Log.d("dat!!",DataWithKey.get(i).getOpponentName());
-
-                    tmplist = new ArrayList<ChatData>();
-                    Log.d("datawithkey:",DataWithKey.get(i).getChattingRoomKey());
-                    for(int j=0;j<UserDetaildata.size();j++){ //상대방의 이미지 얻어오기
-                        if(UserDetaildata.get(j).getName().equals(DataWithKey.get(i).getOpponentName())){
-                            opponentimg = UserDetaildata.get(j).getImg();
-                            break;
-                        }
+                tmplist = new ArrayList<ChatData>();
+                Log.d("datawithkey:", DataWithKey.get(i).getChattingRoomKey());
+                for (int j = 0; j < UserDetaildata.size(); j++) { //상대방의 이미지 얻어오기
+                    if (UserDetaildata.get(j).getName().equals(DataWithKey.get(i).getOpponentName())) {
+                        opponentimg = UserDetaildata.get(j).getImg();
+                        break;
                     }
-
-                    opponentname=DataWithKey.get(i).getOpponentName();
-
-
-                    Log.d("Chatowner_check",MyName);
-
-
-                    //Log.d("roomchat!!last",lastcomment);
-                    //MyChattingList.add(new ChattingListData(lastcomment,opponentname,opponentimg));
-                    //!Chatowner.setValue(new ChatData(null,opponentname,lastcomment,2));
-
-                    Chatowner.child("name").setValue(opponentname);
-                    Chatowner.child("viewtype").setValue(2);
-                    //Chatowner.child("lastcomment").setValue(lastcomments.get(-1).toString());
-
-                    ChattingRoomKey = FirebaseDatabase.getInstance().getReference().child("chattingroom").child(DataWithKey.get(i).getChattingRoomKey()); //현재사용자와 대화한 대화기록있는 채팅방의 키를 얻어와 채팅방 대화내용을 얻어옴.
-
-                    ChattingRoomKey.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                                ChatData chatData = snapshot.getValue(ChatData.class);
-                                lastcomment=chatData.getMaincontent();
-                            }
-                            Chatowner.child("lastcomment").setValue(lastcomment);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    })
-                            ;
                 }
 
+                opponentname = DataWithKey.get(i).getOpponentName();
 
+
+                Log.d("Chatowner_check", MyName);
+
+
+                //Log.d("roomchat!!last",lastcomment);
+                //MyChattingList.add(new ChattingListData(lastcomment,opponentname,opponentimg));
+                //!Chatowner.setValue(new ChatData(null,opponentname,lastcomment,2));
+                //Chatowner = firebaseDatabase.getReference().child("Chatownerlist").child(Myuid).child(DataWithKey.get(i).getOpponentName()); //각자 사용자가 가지는 채팅목록들 저장. 채팅상대의 이름과 프로필사진 그리고 그대화의 마지막대화.
+                //현재 사용자와 대화기록이 있는 사람의 이름을 표시.
+
+
+                FirebaseDatabase.getInstance().getReference().child("Chatownerlist").child(Myuid).child(DataWithKey.get(i).getOpponentName()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Log.d("whatis!!!", snapshot.getKey().toString());
+                            //ChatData chatData =snapshot.getValue(ChatData.class);
+                            map.put(snapshot.getKey(),snapshot.getValue().toString());
+
+
+                        }
+                        int flag=0;
+                        for (int i=0;i<MyChattingList.size();i++){
+                            if(MyChattingList.get(i).getName().equals(map.get("name"))){
+                                MyChattingList.get(i).setMaincontent(map.get("maincontent"));
+                                flag=1;
+
+                            }
+
+                        }
+                        if (flag==0) {
+                            MyChattingList.add(new ChatData(null, map.get("name"), map.get("maincontent"), 2));
+                        }
+                        //Log.d("lastcomment!!",map.get("lastcomment"));
+
+
+                        //Log.d("chek_mychattinglist",MyChattingList.get(MyChattingList.size()-1).getMaincontent());
+                        recyclerAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                })
+                ;
+
+                //Chatowner.child("name").setValue(opponentname);
+                //Chatowner.child("viewtype").setValue(2);
+                //Chatowner.child("lastcomment").setValue(lastcomments.get(-1).toString());
+
+                //ChattingRoomKey = FirebaseDatabase.getInstance().getReference().child("chattingroom").child(DataWithKey.get(i).getChattingRoomKey()); //현재사용자와 대화한 대화기록있는 채팅방의 키를 얻어와 채팅방 대화내용을 얻어옴.
+
+                final int finalI = i;
+                FirebaseDatabase.getInstance().getReference().child("chattingroom").child(DataWithKey.get(i).getChattingRoomKey()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            ChatData chatData = snapshot.getValue(ChatData.class);
+
+                            lastcomment = chatData.getMaincontent();
+                        }
+                        //Chatowner.child("lastcomment").setValue(lastcomment);
+                        //Chatowner.setValue(new ChatData(null, opponentname, lastcomment, 2));
+                        FirebaseDatabase.getInstance().getReference().child("Chatownerlist").child(Myuid).child(DataWithKey.get(finalI).getOpponentName()).setValue(new ChatData(null, opponentname, lastcomment, 2));
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                })
+                ;
+
+
+
+            }
 
 
             }

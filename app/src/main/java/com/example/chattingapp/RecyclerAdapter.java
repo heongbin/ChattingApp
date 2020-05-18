@@ -153,7 +153,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int getItemViewType(int position) {
         Log.d("chase", "뷰타입:" + mProfileUid);
         ChatData chatdata = myChatDataList.get(position);
-        Log.d("getitemview", "리스트에서의 뷰타입:" + chatdata.getuid());
+        //Log.d("getitemview", "리스트에서의 뷰타입:" + chatdata.getuid());
         if (chatdata.getViewtype() == 0) {
             if (chatdata.getuid() == null || chatdata.getuid().equals("")) {
                 return 2;

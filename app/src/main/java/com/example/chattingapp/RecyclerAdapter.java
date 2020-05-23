@@ -2,6 +2,8 @@ package com.example.chattingapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Path;
+import android.icu.text.RelativeDateTimeFormatter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import java.util.ArrayList; //4/16일 내채팅,상대채팅말고 중간 채팅
 import static androidx.core.content.ContextCompat.startActivity;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private String tmp;
     private String MyEmail;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference Myref;
@@ -36,14 +39,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private ArrayList<Integer> chatidlist;
     private String Chatting_key;
     private ArrayList<ChatData> User;
-    private ArrayList<ChatData> chatids;
-    private ArrayList<ChatData> chatkeyandnames;
+    private ArrayList<ChatData> chatids=new ArrayList<ChatData>();
+    private ArrayList<ChatData> chatkeyandnames = new ArrayList<ChatData>();
     private ArrayList<ChattingListData> ChattingRoomList;
     private String tmpkey;
 
     Context mycontext;//4/12 context와 view에대해 공부하기. context는 abstract클래스로 어플리케이션의 자원이나 클래스에 접근할수 있게해줌. 지금객체가 어떤 activity에 있나 자신의 위치를 알려주는 역할.
     private String mProfileUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private ArrayList<ChatData> myChatDataList;
+
+
 
     RecyclerAdapter(Context context,ArrayList<ChatData> chatdatalist){
         this.mycontext = context;
@@ -194,13 +199,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private class FriendListViewHolder extends RecyclerView.ViewHolder{
+
         ImageView FriendListImg;
         TextView FriendListName;
         public FriendListViewHolder(View view){
             super(view);
             User = new ArrayList<ChatData>();
-            chatids = new ArrayList<ChatData>();
-            chatkeyandnames = new ArrayList<ChatData>();
+            //chatids = new ArrayList<ChatData>();
+            //chatkeyandnames = new ArrayList<ChatData>();
+
             firebaseDatabase = FirebaseDatabase.getInstance();
             Log.d("mmprofile4:",mProfileUid);
             Myfref=firebaseDatabase.getReference().child("users"); //내아이디를 확인하는부분.
@@ -232,17 +239,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             })
                     ;
-            MyChattingids=firebaseDatabase.getReference().child("chattingroomid"); //chattingroomid에 고유 데이터 확인하는 리스트만드는 구간.
-            MyChattingids.addValueEventListener(new ValueEventListener() {
+            Myref= firebaseDatabase.getReference().child("chattingroomid");//여기부터
+            Myref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         ChatData chatData = snapshot.getValue(ChatData.class);
-                        chatids.add(chatData);
-                        chatkeyandnames.add(new ChatData(snapshot.getKey(),chatData.getnamea(),chatData.getnameb()));
-                        Log.d("usersview4",chatkeyandnames.get(chatkeyandnames.size()-1).getnamea());
-                        Log.d("usersview4",chatkeyandnames.get(chatkeyandnames.size()-1).getnameb());
+                        //chatkeyandnames.add(chatData);
+                        chatkeyandnames.add(new ChatData(snapshot.getKey(), chatData.getnamea(), chatData.getnameb()));
+
+
                     }
+
+                    //Log.d("usersview4", tmp);
+
                 }
 
                 @Override
@@ -250,8 +260,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 }
             })
-                    ;
+            ;
+
+
+           // MyChattingids=firebaseDatabase.getReference().child("chattingroomid"); //chattingroomid에 고유 데이터 확인하는 리스트만드는 구간.
+
             view.setOnClickListener(new View.OnClickListener() {
+
                 @Override
                 public void onClick(View v) {
                     for (int i=0;i<User.size();i++){
@@ -260,15 +275,19 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             break;
                         }
                     }
-                    Myref= firebaseDatabase.getReference().child("chattingroomid");//여기부터
+
 
 
                         int flag=0;
                         Log.d("Myname!!",String.valueOf(flag));
-                        if(chatids.isEmpty()){
-                            Myref.push().setValue(new ChatData(MyName, FriendListName.getText().toString()));
-                            tmpkey=chatkeyandnames.get(chatkeyandnames.size()-1).getKey();
+                        if(chatkeyandnames.isEmpty()){
+                            //Myref.push().setValue(new ChatData(MyName, FriendListName.getText().toString()));
+                            tmpkey=Myref.push().getKey();
+                            Myref.child(tmpkey).setValue(new ChatData(MyName, FriendListName.getText().toString()));
+
+
                         }
+
                         else {//이부분 chattingroomid부분에서 중복 발생. 내일 해결.
                             for (int i = 0; i < chatkeyandnames.size(); i++) {
                                 if ((chatkeyandnames.get(i).getnameb().equals(MyName) && chatkeyandnames.get(i).getnamea().equals(FriendListName.getText().toString())) || (chatkeyandnames.get(i).getnameb().equals(FriendListName.getText().toString()) && chatkeyandnames.get(i).getnamea().equals(MyName))) {
@@ -282,10 +301,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
                                 if(flag==0) {
-                                    Myref.push().setValue(new ChatData(MyName, FriendListName.getText().toString()));
-                                    tmpkey = chatkeyandnames.get(chatkeyandnames.size()-1).getKey();
+                                    tmpkey=Myref.push().getKey();
+                                    Myref.child(tmpkey).setValue(new ChatData(MyName, FriendListName.getText().toString()));
 
-                                    Log.d("Myref!",tmpkey);
+
+
+
+
+
                                 }
 
 
@@ -296,7 +319,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         Chatting_key=tmpkey;
 
 
-                        Log.d("sibal",tmpkey);
+                        //Log.d("sibal",tmpkey);
                         //if (!chatkeyandnames.isEmpty()) {
                           //  for (int i = 0; i < chatkeyandnames.size(); i++) {
                             //    if (((chatkeyandnames.get(i).getnamea().equals(FriendListName.getText().toString())) && (chatkeyandnames.get(i).getnameb().equals(MyName))) || ((chatkeyandnames.get(i).getnamea().equals(MyName) && chatkeyandnames.get(i).getnameb().equals(FriendListName.getText().toString())))) {
@@ -307,13 +330,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         //}
 
 
-                    Intent intent =new Intent(mycontext,SuccessActivity.class);
-                    intent.putExtra("chat_key",Chatting_key); //채팅할 상대방 아이디를 채팅페이지로 전송.
-                    mycontext.startActivity(intent);
+
+
+                        Intent intent = new Intent(mycontext, SuccessActivity.class);
+                        intent.putExtra("chat_key", Chatting_key); //채팅할 상대방 아이디를 채팅페이지로 전송.
+                        mycontext.startActivity(intent);
+
 
                 }
             })
             ;
+
 
             FriendListImg = view.findViewById(R.id.friend_list_img_view);
             FriendListName = view.findViewById(R.id.friend_list_name_view);
@@ -361,4 +388,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             Chat_Entrance = view.findViewById(R.id.middle_chat_title);
         }
     }
+
+
 }
+

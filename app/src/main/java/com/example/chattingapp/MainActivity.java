@@ -44,31 +44,12 @@ public class MainActivity extends AppCompatActivity {
         CheckList = new ArrayList<ChatData>();
         edit_id = (EditText)findViewById(R.id.edit_id);
         edit_password = (EditText)findViewById(R.id.edit_password);
-        Name= getIntent().getStringExtra("name");
+        //Name= getIntent().getStringExtra("name");
 
 
         firebaseAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
-        mRef = mDatabase.getReference().child("users"); //유저정보 저장
 
-        mRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    ChatData chatdata = snapshot.getValue(ChatData.class);
-                    CheckList.add(chatdata);
-
-
-
-
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        })
-        ;
 
 
 
@@ -84,47 +65,34 @@ public class MainActivity extends AppCompatActivity {
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String id = edit_id.getText().toString();
-                String password = edit_password.getText().toString();
-                flag=0;
-                firebaseAuth.signInWithEmailAndPassword(id,password)
-                        .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful()) { //로그인 성공 현재 내가짠 로직은 로그인 버튼을 눌러야만 목록에 저장이됨 만약 회원가입을하고 로그인패스하고 다른아이디로 회원가입을 바로하면 error
-                                    Intent intent = new Intent(MainActivity.this, TabMenuActivity.class);
+                if (edit_id.getText().toString().equals("")||edit_password.getText().toString().equals("")){
+                    Toast.makeText(getBaseContext(), "put the email and password!!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    String id = edit_id.getText().toString();
+                    String password = edit_password.getText().toString();
+                    firebaseAuth.signInWithEmailAndPassword(id, password)
+                            .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) { //로그인 성공 현재 내가짠 로직은 로그인 버튼을 눌러야만 목록에 저장이됨 만약 회원가입을하고 로그인패스하고 다른아이디로 회원가입을 바로하면 error
+                                        Intent intent = new Intent(MainActivity.this, TabMenuActivity.class);
 
 
-                                    mUser=firebaseAuth.getCurrentUser();
-                                    ChatData chatData = new ChatData(Name,mUser.getUid(),null,mUser.getEmail(),1);
-
-
-
-                                    for(int i=0;i<CheckList.size();i++){
-                                        if(CheckList.get(i).getuid().equals(chatData.getuid())){
-                                            flag=1;
-                                            break;
-
-                                        }
+                                        intent.putExtra("id", edit_id.getText().toString());
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "login fail", Toast.LENGTH_SHORT).show();
 
                                     }
-
-                                    if(flag==0){
-                                    mRef.push().setValue(chatData);
-                                    }
-
-                                    intent.putExtra("id",edit_id.getText().toString());
-                                    startActivity(intent);
-                                    finish();
-                                }else{
-                                    Toast.makeText(MainActivity.this,"login fail",Toast.LENGTH_SHORT).show();
 
                                 }
-
-                            }
-                        })
-;
+                            })
+                    ;
+                }
             }
+
         });
     }
 

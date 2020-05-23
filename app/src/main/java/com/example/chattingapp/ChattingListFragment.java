@@ -171,7 +171,9 @@ public class ChattingListFragment extends Fragment {
                     else if (chatData.getnameb().equals(MyName)){
                         DataWithKey.add(new UserDataWithKey(chatkey,chatData.getnamea()));
                     }
+
                 }
+
                 //for(int i=0;i<chattingroomlist.size();i++){
                   //  if (chattingroomlist.get(i).getnamea().equals(MyName)){//채팅룸 정보가 현재사용자의 uid를 포함하고있다면면
                     //    DataWithKey.add(new UserDataWithKey(chattingroomlist.get(i).getKey(),chattingroomlist.get(i).getnameb()));

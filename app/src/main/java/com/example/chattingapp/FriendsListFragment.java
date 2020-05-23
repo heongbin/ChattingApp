@@ -50,6 +50,7 @@ public class FriendsListFragment extends Fragment {
     private ArrayList<ChatData> User;
     private FirebaseDatabase firebaseDatabase;
 
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -112,6 +113,8 @@ public class FriendsListFragment extends Fragment {
         recyclerAdapter = new RecyclerAdapter(context,FriendList);
         mRecyclerView.setAdapter(recyclerAdapter);
         //mRecyclerView.setLayoutManager(linearLayout);
+
+
 
 
         database = FirebaseDatabase.getInstance();

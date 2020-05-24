@@ -21,6 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
     <Button
+        android:text="send"
         android:layout_gravity="bottom"
         android:id="@+id/send_message_id"
         android:layout_width="wrap_content"

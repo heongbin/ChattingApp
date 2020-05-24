@@ -185,6 +185,7 @@ public class ChattingListFragment extends Fragment {
 
 
             for (int i=0;i<DataWithKey.size();i++ ) {//현재 사용자와 채팅하는 사람들의 유저이름과 그 고유 채팅방키를 가져옴
+                lastcomment = null;
                 String opponentimg = null;
                 final String opponentname;
 
@@ -271,11 +272,12 @@ public class ChattingListFragment extends Fragment {
                             ChatData chatData = snapshot.getValue(ChatData.class);
 
                             lastcomment = chatData.getMaincontent();
+
                         }
                         //Chatowner.child("lastcomment").setValue(lastcomment);
                         //Chatowner.setValue(new ChatData(null, opponentname, lastcomment, 2));
                         FirebaseDatabase.getInstance().getReference().child("Chatownerlist").child(Myuid).child(DataWithKey.get(finalI).getOpponentName()).setValue(new ChatData(null, opponentname, lastcomment, 2));
-
+                        lastcomment="";
 
                     }
 

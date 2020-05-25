@@ -14,6 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
+
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -26,17 +27,18 @@
                 android:orientation="vertical"
                 >
                 <TextView
+                    android:layout_gravity="right"
                     android:gravity="right"
                     android:text="title"
                     android:id="@+id/my_chat_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     ></TextView>
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     >
                 <TextView

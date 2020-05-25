@@ -50,6 +50,7 @@ public class SuccessActivity extends AppCompatActivity {
         id=getIntent().getStringExtra("chat_key"); //이메일 주소
 
 
+
         firebaseDatabase = FirebaseDatabase.getInstance();
         try {
             MyRef = firebaseDatabase.getReference().child("chattingroom").child(id);
@@ -83,8 +84,10 @@ public class SuccessActivity extends AppCompatActivity {
             public void onClick(View v) {
                 MyRef.push().setValue(new ChatData(MyUid,null,MyName,main_send_text.getText().toString(),null));
                 main_send_text.setText("");
+                mRecyclerView.scrollToPosition(chatlist.size()-1);
             }
         });
+
 
         MyRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -96,7 +99,11 @@ public class SuccessActivity extends AppCompatActivity {
                     Log.d("find_getkey",VS);
                     chatlist.add(value);
                     mRecyclerAdapter.notifyDataSetChanged();
+
                 }
+
+                mRecyclerView.scrollToPosition(chatlist.size()-1);
+
             }
 
             @Override

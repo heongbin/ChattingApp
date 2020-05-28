@@ -33,6 +33,7 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class ChattingListFragment extends Fragment {
+    private String time;
     private String lastname;
     private ArrayList<String> lastcomments;
     private HashMap<String,String> map;
@@ -230,6 +231,7 @@ public class ChattingListFragment extends Fragment {
                             for (int i = 0; i < MyChattingList.size(); i++) {
                                 if (MyChattingList.get(i).getName().equals(map.get("name"))) {
                                     MyChattingList.get(i).setMaincontent(map.get("maincontent"));
+                                    MyChattingList.get(i).setTime(map.get("time"));
                                     flag = 1;
 
                                 }
@@ -241,7 +243,7 @@ public class ChattingListFragment extends Fragment {
 
                         if (flag==0) {
                             if (map.get("name")!=null) {
-                                MyChattingList.add(new ChatData(null, map.get("name"), map.get("maincontent"), 2));
+                                MyChattingList.add(new ChatData(null, map.get("name"), map.get("maincontent"), 2,map.get("time")));
                             }
                         }
                         //Log.d("lastcomment!!",map.get("lastcomment"));
@@ -272,12 +274,14 @@ public class ChattingListFragment extends Fragment {
                             ChatData chatData = snapshot.getValue(ChatData.class);
 
                             lastcomment = chatData.getMaincontent();
+                            time=chatData.getTime();
 
                         }
                         //Chatowner.child("lastcomment").setValue(lastcomment);
                         //Chatowner.setValue(new ChatData(null, opponentname, lastcomment, 2));
-                        FirebaseDatabase.getInstance().getReference().child("Chatownerlist").child(Myuid).child(DataWithKey.get(finalI).getOpponentName()).setValue(new ChatData(null, opponentname, lastcomment, 2));
+                        FirebaseDatabase.getInstance().getReference().child("Chatownerlist").child(Myuid).child(DataWithKey.get(finalI).getOpponentName()).setValue(new ChatData(null, opponentname, lastcomment, 2,time));
                         lastcomment="";
+                        time="";
 
                     }
 

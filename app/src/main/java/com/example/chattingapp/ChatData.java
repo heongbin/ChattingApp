@@ -24,6 +24,9 @@ public class ChatData {
         return maincontent;
     }
 
+    public void setTime(String time) {
+        this.time=time;
+    }
     public void setMaincontent(String maincontent) {
         this.maincontent = maincontent;
     }
@@ -44,11 +47,12 @@ public class ChatData {
     public String getnameb(){return nameb;}
     public ChatData(){}
 
-    public ChatData(String img,String name, String lastcomment,int viewtype){
+    public ChatData(String img,String name, String lastcomment,int viewtype,String time){
         this.img=img;
         this.name=name;
         this.maincontent=lastcomment;
         this.viewtype=viewtype;
+        this.time=time;
 
     }
     public ChatData(String chatkey,String namea,String nameb){ //채팅방 당 생성된 고유키와 상대이름과 내이름담은 생성자.
@@ -79,5 +83,6 @@ public class ChatData {
         this.time=time;
 
     }
+
 
 }

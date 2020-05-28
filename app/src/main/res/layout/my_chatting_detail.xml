@@ -19,44 +19,45 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1"></View>
+
             <LinearLayout
 
-                android:layout_gravity="right"
-                android:layout_width="wrap_content"
+                android:layout_width="200dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                >
+                android:layout_gravity="right"
+                android:orientation="vertical">
+
                 <TextView
-                    android:layout_gravity="right"
-                    android:gravity="right"
-                    android:text="title"
                     android:id="@+id/my_chat_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="right"
                     android:layout_margin="5dp"
-                    ></TextView>
+                    android:gravity="right"
+                    android:text="title"></TextView>
 
                 <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    >
-                <TextView
-                    android:text="main_contenta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/my_chat_main"
-                    android:layout_margin="5dp"
-                    ></TextView>
-                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_gravity="right">
 
-                    android:layout_toLeftOf="@+id/my_chat_main"
-                    android:textSize="5dp"
+                    <TextView
+                        android:layout_toRightOf="@id/my_chat_time"
+                        android:id="@+id/my_chat_main"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="main_contenta"></TextView>
 
-                    android:text="aa:aa:aa"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/my_chat_time"></TextView>
+                    <TextView
+                        android:layout_margin="5dp"
+                        android:id="@+id/my_chat_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="aa:aa:aa"
+                        android:textSize="10dp"></TextView>
+
                 </RelativeLayout>
 
             </LinearLayout>

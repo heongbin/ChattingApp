@@ -6,7 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -16,6 +19,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -55,6 +62,7 @@ public class SignupActivity extends AppCompatActivity {
         CheckList= new ArrayList<ChatData>();
         check = (Button) findViewById(R.id.id_check_button);
         imageview = (ImageView) findViewById(R.id.profile_image_view);
+
         email = (EditText) findViewById(R.id.signupactivity_edittext_email);
         name = (EditText) findViewById(R.id.signupactivity_edittext_name);
         password = (EditText) findViewById(R.id.signupactivity_edittext_password);
@@ -80,6 +88,9 @@ public class SignupActivity extends AppCompatActivity {
             }
         })
         ;
+
+            Glide.with(getApplicationContext()).load(R.drawable.ic_account_box_black_24dp).into(imageview);
+
 
         imageview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,10 +206,11 @@ public class SignupActivity extends AppCompatActivity {
             if (requestCode == RESULT_OK) {
                 String imgfinal = getpicture(data.getData());
                 //Uri uri = data.getData();
-                Glide.with(getApplicationContext()).load(imgfinal).into(imageview);
+                Glide.with(getApplicationContext()).load(imgfinal).apply(RequestOptions.circleCropTransform()).into(imageview);
 
 
             }
+
 
 
         }

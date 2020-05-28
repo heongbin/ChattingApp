@@ -1,14 +1,21 @@
 package com.example.chattingapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class TabMenuActivity extends AppCompatActivity {
     private Context mContext;
@@ -17,6 +24,9 @@ public class TabMenuActivity extends AppCompatActivity {
     private ContentsPagerAdapter mContentPagerAdapter;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +34,7 @@ public class TabMenuActivity extends AppCompatActivity {
         mTabLayout = (TabLayout)findViewById(R.id.layout_tab);
         mTabLayout.addTab(mTabLayout.newTab().setCustomView(R.layout.tab_detail));
         mTabLayout.addTab(mTabLayout.newTab().setCustomView(R.layout.tab_chattinglist_detail));
+
 
 
         mViewPager = (ViewPager)findViewById(R.id.pager_page);

@@ -23,7 +23,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SuccessActivity extends AppCompatActivity {
     private ArrayList<ChatData> chatlist;
@@ -76,13 +78,16 @@ public class SuccessActivity extends AppCompatActivity {
         mRecyclerAdapter = new RecyclerAdapter(getApplicationContext(),chatlist);
         mRecyclerView.setAdapter(mRecyclerAdapter);
 
-
+        long now = System.currentTimeMillis();
+        Date mDate = new Date(now);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm");
+        final String getTime = simpleDateFormat.format(mDate);
 
 
         SendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyRef.push().setValue(new ChatData(MyUid,null,MyName,main_send_text.getText().toString(),null));
+                MyRef.push().setValue(new ChatData(MyUid,null,MyName,main_send_text.getText().toString(),getTime));
                 main_send_text.setText("");
                 mRecyclerView.scrollToPosition(chatlist.size()-1);
             }

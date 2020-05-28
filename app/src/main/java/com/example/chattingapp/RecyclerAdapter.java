@@ -43,6 +43,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private ArrayList<ChatData> chatkeyandnames = new ArrayList<ChatData>();
     private ArrayList<ChattingListData> ChattingRoomList;
     private String tmpkey;
+    DatabaseReference MyCref;
+    DatabaseReference MyCfref;
 
     Context mycontext;//4/12 context와 view에대해 공부하기. context는 abstract클래스로 어플리케이션의 자원이나 클래스에 접근할수 있게해줌. 지금객체가 어떤 activity에 있나 자신의 위치를 알려주는 역할.
     private String mProfileUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -107,6 +109,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
         else if(holder instanceof  ChattingListViewHolder){
             ChattingListViewHolder chattingListViewHolder = (ChattingListViewHolder)holder;
+            chattingListViewHolder.ChattingListTime.setText(chatdata.getTime());
             if(chatdata.getImg()==null){
                 chattingListViewHolder.ChattingListImg.setImageResource(R.drawable.ic_account_box_black_24dp);
             }
@@ -188,12 +191,99 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         ImageView ChattingListImg;
         TextView ChattingListName;
         TextView ChattingListLastComment;
+        TextView ChattingListTime;
         public ChattingListViewHolder(View view){
             super(view);
+            User = new ArrayList<ChatData>();
+            //chatids = new ArrayList<ChatData>();
+            chatkeyandnames = new ArrayList<ChatData>();
+
+
+            Log.d("mmprofile4:",mProfileUid);
+            MyCref=FirebaseDatabase.getInstance().getReference().child("users"); //내아이디를 확인하는부분.
+            MyCref.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    ChatData chatData = dataSnapshot.getValue(ChatData.class);
+                    User.add(chatData);
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            })
+            ;
+            MyCfref= FirebaseDatabase.getInstance().getReference().child("chattingroomid");//여기부터
+            MyCfref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        ChatData chatData = snapshot.getValue(ChatData.class);
+                        //chatkeyandnames.add(chatData);
+                        chatkeyandnames.add(new ChatData(snapshot.getKey(), chatData.getnamea(), chatData.getnameb()));
+
+
+                    }
+
+                    //Log.d("usersview4", tmp);
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            })
+            ;
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (int i=0;i<User.size();i++){
+                        if (User.get(i).getuid().equals(mProfileUid)){
+                            MyName = User.get(i).getName();
+                            break;
+                        }
+                    }
+
+                    for (int i = 0; i < chatkeyandnames.size(); i++) {
+                        if ((chatkeyandnames.get(i).getnameb().equals(MyName) && chatkeyandnames.get(i).getnamea().equals(ChattingListName.getText().toString())) || (chatkeyandnames.get(i).getnameb().equals(ChattingListName.getText().toString()) && chatkeyandnames.get(i).getnamea().equals(MyName))) {
+                            tmpkey = chatkeyandnames.get(i).getKey();
+                            break;
+
+                        }
+                    }
+                    Chatting_key=tmpkey;
+                    Log.d("chattingkey_chase:",Chatting_key);
+                    mycontext = v.getContext();
+
+                    Intent intent = new Intent(mycontext, SuccessActivity.class);
+                    intent.putExtra("chat_key", Chatting_key); //채팅할 상대방 아이디를 채팅페이지로 전송.
+                    mycontext.startActivity(intent);
+
+
+
+                }
+            });
             ChattingListImg = (ImageView)view.findViewById(R.id.chattingroom_imageview);
             ChattingListName = (TextView)view.findViewById(R.id.chattingroom_your_name);
             ChattingListLastComment = (TextView)view.findViewById(R.id.chattingroom_last_comment);
-
+            ChattingListTime = (TextView)view.findViewById(R.id.last_comment_time);
         }
 
     }
